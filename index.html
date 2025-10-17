@@ -70,15 +70,6 @@
             letter-spacing: 1px;
         }
         
-        .message {
-            font-size: 1.5rem;
-            margin-top: 30px;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            display: none;
-        }
-        
         .audio-controls {
             margin-top: 20px;
             display: flex;
@@ -111,6 +102,7 @@
         .volume-control {
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 10px;
             margin-top: 15px;
         }
@@ -131,6 +123,14 @@
             border-radius: 50%;
             background: white;
             cursor: pointer;
+        }
+        
+        .status-message {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
         }
         
         @media (max-width: 600px) {
@@ -197,12 +197,14 @@
             <input type="range" min="0" max="1" step="0.1" value="0.7" class="volume-slider" id="volumeSlider">
         </div>
         
-        <div class="message" id="completed-message"></div>
+        <div class="status-message" id="statusMessage">
+            Музыка включится автоматически...
+        </div>
     </div>
 
     <!-- Аудио элемент -->
-    <audio id="backgroundMusic" loop>
-        <source src="https://fine.sunproxy.net/file/NitsT2NLMmYvR2JKQkwzT1BVMVNPaHBJUkFlTnF2aWlVRzBVd0FNN1FxZFRJTFVrTHB1cDludEJneFdCUlJTOVlFZ09XeGRQZ2RTZXhNclJRVzhTZ3BMZ25JVHQwZzQzRER4OWdGMVlaUWc9/Frederic_-_Odd_Loop_Yamada-kun_to_7-nin_no_Majo_OVA_ED_(SkySound.cc).mp3" type="audio/mpeg">
+    <audio id="backgroundMusic" loop preload="auto">
+        <source src="https://assets.mixkit.co/music/preview/mixkit-tech-house-vibes-130.mp3" type="audio/mpeg">
         Ваш браузер не поддерживает аудио элемент.
     </audio>
 
@@ -214,7 +216,7 @@
         const hoursElement = document.getElementById("hours");
         const minutesElement = document.getElementById("minutes");
         const secondsElement = document.getElementById("seconds");
-        const messageElement = document.getElementById("completed-message");
+        const statusMessage = document.getElementById("statusMessage");
         
         // Элементы управления аудио
         const audio = document.getElementById("backgroundMusic");
@@ -222,31 +224,51 @@
         const pauseBtn = document.getElementById("pauseBtn");
         const volumeSlider = document.getElementById("volumeSlider");
         
+        // Устанавливаем громкость
+        audio.volume = volumeSlider.value;
+        
         // Функция для воспроизведения музыки
         function playMusic() {
-            audio.play().catch(error => {
-                console.log("Автовоспроизведение заблокировано:", error);
-                // Показываем кнопку воспроизведения, если автовоспроизведение заблокировано
-                playBtn.style.display = "flex";
-            });
+            const playPromise = audio.play();
+            
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    // Автовоспроизведение успешно запущено
+                    statusMessage.textContent = "Музыка включена";
+                    statusMessage.style.background = "rgba(76, 175, 80, 0.3)";
+                    playBtn.style.display = "none";
+                }).catch(error => {
+                    // Автовоспроизведение заблокировано
+                    console.log("Автовоспроизведение заблокировано:", error);
+                    statusMessage.textContent = "Нажмите 'Включить музыку' для запуска";
+                    statusMessage.style.background = "rgba(255, 152, 0, 0.3)";
+                    playBtn.style.display = "flex";
+                });
+            }
         }
         
-        // Автоматический запуск музыки при загрузке страницы
+        // Пытаемся запустить музыку сразу после загрузки страницы
         window.addEventListener('load', function() {
-            // Устанавливаем громкость
-            audio.volume = volumeSlider.value;
-            
-            // Пытаемся запустить музыку автоматически
+            // Небольшая задержка для надежности
+            setTimeout(playMusic, 500);
+        });
+        
+        // Дополнительная попытка после первого взаимодействия пользователя
+        document.body.addEventListener('click', function firstInteraction() {
             playMusic();
+            document.body.removeEventListener('click', firstInteraction);
         });
         
         // Обработчики для кнопок управления аудио
         playBtn.addEventListener('click', function() {
-            audio.play();
+            playMusic();
         });
         
         pauseBtn.addEventListener('click', function() {
             audio.pause();
+            statusMessage.textContent = "Музыка на паузе";
+            statusMessage.style.background = "rgba(244, 67, 54, 0.3)";
+            playBtn.style.display = "flex";
         });
         
         volumeSlider.addEventListener('input', function() {
