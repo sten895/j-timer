@@ -35,18 +35,6 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
         
-        h1 {
-            font-size: 2.8rem;
-            margin-bottom: 10px;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-        }
-        
-        .subtitle {
-            font-size: 1.2rem;
-            margin-bottom: 40px;
-            opacity: 0.9;
-        }
-        
         .timer-container {
             display: flex;
             justify-content: center;
@@ -91,12 +79,6 @@
             display: none;
         }
         
-        .footer {
-            margin-top: 40px;
-            font-size: 0.9rem;
-            opacity: 0.7;
-        }
-        
         @media (max-width: 600px) {
             .timer-unit {
                 min-width: 80px;
@@ -107,10 +89,6 @@
                 font-size: 2.5rem;
             }
             
-            h1 {
-                font-size: 2rem;
-            }
-            
             .container {
                 padding: 25px;
             }
@@ -119,9 +97,6 @@
 </head>
 <body>
     <div class="container">
-        <h1>Обратный отсчет</h1>
-        <p class="subtitle">До завершения события осталось:</p>
-        
         <div class="timer-container">
             <div class="timer-unit">
                 <div class="timer-value" id="days">00</div>
@@ -141,16 +116,12 @@
             </div>
         </div>
         
-        <div class="message" id="completed-message">
-            Событие завершено!
-        </div>
-        
-        <p class="footer">Таймер будет работать до установленной даты</p>
+        <div class="message" id="completed-message"></div>
     </div>
 
     <script>
-        // Установите дату окончания отсчета
-        const countDownDate = new Date("Dec 31, 2024 23:59:59").getTime();
+        // Установка даты окончания - 17 ноября 2025 года, 17:15 по Московскому времени
+        const countDownDate = new Date('2025-11-17T17:15:00+03:00').getTime();
         
         const daysElement = document.getElementById("days");
         const hoursElement = document.getElementById("hours");
@@ -169,7 +140,6 @@
                 hoursElement.textContent = "00";
                 minutesElement.textContent = "00";
                 secondsElement.textContent = "00";
-                messageElement.style.display = "block";
                 return;
             }
             
